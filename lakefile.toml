@@ -1,4 +1,4 @@
-name = "lean_verification_template"
+name = "free_group_hypercontractivity"
 version = "0.1.0"
 defaultTargets = ["Challenge", "Solution"]
 

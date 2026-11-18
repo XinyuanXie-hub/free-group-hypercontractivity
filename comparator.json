@@ -1,7 +1,10 @@
 {
   "challenge_module": "Challenge",
   "solution_module": "Solution",
-  "theorem_names": [],
+  "theorem_names": [
+    "FreeGroupHypercontractivity.theorem_1_1",
+    "FreeGroupHypercontractivity.theorem_1_2"
+  ],
   "permitted_axioms": [
     "propext",
     "Quot.sound",

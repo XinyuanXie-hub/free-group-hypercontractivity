@@ -1,32 +1,37 @@
-# Fill in the placeholders after Comparator passes.
 project:
-  name: "{{REPOSITORY_NAME}}"
-  description: "Verification that {{THEOREM_CLAIMS}}, as shown in the source."
+  name: "free-group-hypercontractivity"
+  description: >-
+    Verification that the word-length Poisson semigroup on free groups has
+    the sharp hypercontractivity threshold and that positive Fourier
+    polynomials satisfy the log-Sobolev inequality with constant 2, as shown
+    in the source.
   authors:
-    - "{{FORMALIZATION_AUTHOR}}"
+    - "Xinyuan Xie"
+    - "Haonan Zhang"
   license: "Apache-2.0"
   responsible_maintainers:
-    - "{{FORMALIZATION_AUTHOR}}"
+    - "Xinyuan Xie"
+    - "Haonan Zhang"
 
 classification:
-  arxiv: ["{{ARXIV_CATEGORY}}"]
+  arxiv: ["math.OA", "math.FA"]
 
 sources:
-  - title: "{{PAPER_TITLE}}"
-    authors: ["{{PAPER_AUTHOR}}"]
-    id: "{{PAPER_ID}}"
+  - title: "Sharp hypercontractivity for free group von Neumann algebras"
+    authors: ["Xinyuan Xie", "Haonan Zhang"]
+    id: "arXiv:2606.03423v3"
     relationship: "formalizes"
 
 automation:
   methods:
     - method: "agent"
       tool_setup: >-
-        AI agents drafted and revised the Lean statement, implemented
-        the proof, and ran verification under human direction.
+        AI agents drafted the Lean statements, implemented the proofs, and
+        ran verification under human direction.
 
 review:
   status: "self-assessed"
   notes: >-
-    The project owner reviewed and approved the statement and definitions
-    before proof development. The solution passed Comparator with Lean,
+    The requester reviewed and approved the definitions and statements
+    before proof development. Comparator accepted both proofs with Lean,
     NanoDa, and con-ron.
