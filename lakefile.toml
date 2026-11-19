@@ -1,4 +1,4 @@
-name = "free_group_hypercontractivity"
+name = "lean_verification_template"
 version = "0.1.0"
 defaultTargets = ["Challenge", "Solution"]
 
@@ -14,4 +14,4 @@ name = "Challenge"
 name = "Solution"
 
 [[lean_lib]]
-name = "Template"
+name = "free-group-hypercontractivity"

@@ -111,7 +111,7 @@
       "configFile": "lakefile.toml"
     }
   ],
-  "name": "free_group_hypercontractivity",
+  "name": "lean_verification_template",
   "lakeDir": ".lake",
   "fixedToolchain": false
 }

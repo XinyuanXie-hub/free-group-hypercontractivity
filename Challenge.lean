@@ -4,6 +4,7 @@ public import Mathlib.Algebra.MonoidAlgebra.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.InnerProductSpace.l2Space
+public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.GroupTheory.FreeGroup.Reduce
@@ -81,19 +82,62 @@ noncomputable def entropy {n : ℕ} (T : Operator n) : ℝ :=
   traceRe (cfc (p := IsStarNormal) (fun s : ℂ ↦ Complex.ofReal (s.re * Real.log s.re)) T) -
     traceRe T * Real.log (traceRe T)
 
-/-- Theorem 1.1 in its dense-core formulation. The contractive inequality on Fourier
-polynomials is the condition for a contractive extension from Lp to Lq. -/
+/-- The real part of the canonical trace on the group algebra. -/
+def τ {n : ℕ} (x : GroupAlgebra n) : ℝ :=
+  (x.coeff 1).re
+
+/-- Entropy of a positive group-algebra element in the left regular representation. -/
+noncomputable def Ent {n : ℕ} (x : GroupAlgebra n) : ℝ :=
+  entropy (regularImage x)
+
+/-- A realization of the tracial norm on finite Fourier sums. The scalar bound
+makes its metric completion a complex normed space. -/
+structure FourierLpNorm (n : ℕ) (p : ℝ) where
+  coreNorm : AddGroupNorm (GroupAlgebra n)
+  norm_eq : ∀ x, coreNorm x = lpNorm p x
+  norm_smul_le : ∀ (c : ℂ) (x : GroupAlgebra n),
+    coreNorm (c • x) ≤ ‖c‖ * coreNorm x
+
+/-- A copy of the Fourier algebra endowed with a specified tracial norm. -/
+@[expose] def FourierLpCore {n : ℕ} {p : ℝ} (_ : FourierLpNorm n p) := GroupAlgebra n
+
+noncomputable instance {n : ℕ} {p : ℝ} (N : FourierLpNorm n p) :
+    NormedAddCommGroup (FourierLpCore N) := N.coreNorm.toNormedAddCommGroup
+
+noncomputable instance {n : ℕ} {p : ℝ} (N : FourierLpNorm n p) :
+    NormedSpace ℂ (FourierLpCore N) where
+  toModule := inferInstanceAs (Module ℂ (GroupAlgebra n))
+  norm_smul_le := N.norm_smul_le
+
+/-- The finite-exponent tracial Lp space in its Fourier completion model. The
+Fourier polynomials are dense in the tracial Lp space of the group von Neumann
+algebra, so their metric completion gives the same space. -/
+noncomputable abbrev FourierLp {n : ℕ} {p : ℝ} (N : FourierLpNorm n p) :=
+  UniformSpace.Completion (FourierLpCore N)
+
+/-- The canonical embedding of a Fourier polynomial into the completed space. -/
+@[expose] noncomputable def fourierLpEmbed {n : ℕ} {p : ℝ} (N : FourierLpNorm n p)
+    (x : GroupAlgebra n) : FourierLp N :=
+  ((show FourierLpCore N from x) : FourierLp N)
+
+/-- Theorem 1.1. The Poisson Fourier multiplier has a contractive complex
+linear extension between the tracial Lp and Lq completions exactly at the
+stated times. -/
 theorem theorem_1_1 (n : ℕ) (hn : 2 ≤ n) (p q t : ℝ)
     (hp : 1 < p) (hpq : p ≤ q) (ht : 0 ≤ t) :
-    (∀ x : GroupAlgebra n, lpNorm q (poisson t x) ≤ lpNorm p x) ↔
-      (1 / 2 : ℝ) * Real.log ((q - 1) / (p - 1)) ≤ t := by
+    ∃ (Np : FourierLpNorm n p) (Nq : FourierLpNorm n q),
+      ((∃ P : FourierLp Np →L[ℂ] FourierLp Nq,
+          (∀ x : GroupAlgebra n, P (fourierLpEmbed Np x) = fourierLpEmbed Nq (poisson t x)) ∧
+          ∀ x : FourierLp Np, ‖P x‖ ≤ ‖x‖) ↔
+        (1 / 2 : ℝ) * Real.log ((q - 1) / (p - 1)) ≤ t) := by
   sorry
 
-/-- Theorem 1.2, the inequality on positive Fourier polynomials. -/
+local notation "L" => generator
+
+/-- Theorem 1.2, equation (1.1). Positivity is in the left regular representation. -/
 theorem theorem_1_2 (n : ℕ) (hn : 2 ≤ n) (x : GroupAlgebra n)
     (hx : 0 ≤ regularImage x) :
-    entropy (regularImage x ^ 2) ≤
-      2 * traceRe (regularImage x * regularImage (generator x)) := by
+    Ent (x ^ 2) ≤ 2 * τ (x * L x) := by
   sorry
 
 end FreeGroupHypercontractivity
