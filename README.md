@@ -39,6 +39,8 @@ $$
 \tag{1.1}
 $$
 
+The inequality extends by closure to the natural form domain of $`L^{1/2}`$.
+
 ## Verification
 
 To verify the correctness of the theorems in Lean, one only needs to check that the statements and definitions in [Challenge.lean](Challenge.lean) match [Theorem 1.1](#theorem-1-1) and [Theorem 1.2](#theorem-1-2) stated above, and confirm that `lake comparator` succeeds.
@@ -47,7 +49,7 @@ The results of `lake comparator` can be checked through the GitHub workflow prov
 
 1. Sign in to GitHub, open the “Actions” tab, then open the first workflow run listed there.
 2. Click “Verify the Challenge against Solution”, then expand “Run Comparator with Lean, NanoDa, and con-ron”.
-3. Check that the log reports acceptance by con-ron, NanoDa, and Lean, followed by `Your solution is okay!`.
+3. Check that the log (lines 198–203) reports acceptance by con-ron, NanoDa, and Lean, followed by `Your solution is okay!`.
 
 
 Note: Here, we use the [“gold standard”](https://lean-lang.org/doc/reference/latest/ValidatingProofs/#validating-comparator) for validating proofs in Lean, and we refer readers to [“Challenges and External Checkers”](https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Lake/#lake-comparator) for details on how it works.

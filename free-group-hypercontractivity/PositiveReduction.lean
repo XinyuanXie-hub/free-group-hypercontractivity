@@ -194,7 +194,9 @@ private theorem traceRe_norm_le {n : ℕ} (A : Operator n) : traceRe A ≤ ‖A�
       (A.unit_le_opNorm v hv.le)))
 
 private theorem trace_pair_powers {n : ℕ} {A B : Operator n}
-    (hA : 0 ≤ A) (hB : 0 ≤ B) (hAc : A ∈ groupCStar n) (hBc : B ∈ groupCStar n)
+    (S : StarSubalgebra ℂ (Operator n)) [IsClosed (S : Set (Operator n))]
+    (hτ : ∀ {U V : Operator n}, U ∈ S → V ∈ S → traceRe (U * V) = traceRe (V * U))
+    (hA : 0 ≤ A) (hB : 0 ≤ B) (hAc : A ∈ S) (hBc : B ∈ S)
     {a b c d : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hc : 0 ≤ c) (hd : 0 ≤ d) :
     traceRe (star (operatorRpow A a * operatorRpow B b) *
       (operatorRpow A c * operatorRpow B d)) =
@@ -212,23 +214,25 @@ private theorem trace_pair_powers {n : ℕ} {A B : Operator n}
     calc
       star (A₁ * B₁) = star B₁ * star A₁ := star_mul _ _
       _ = B₁ * A₁ := by rw [hB₁, hA₁]
-  have hmB₁ : B₁ ∈ groupCStar n := operatorRpow_mem_groupCStar hBc b
-  have hm : (A₁ * A₂) * B₂ ∈ groupCStar n := (groupCStar n).mul_mem
-    ((groupCStar n).mul_mem (operatorRpow_mem_groupCStar hAc a)
-      (operatorRpow_mem_groupCStar hAc c)) (operatorRpow_mem_groupCStar hBc d)
+  have hpow {T : Operator n} (hT : T ∈ S) (r : ℝ) : operatorRpow T r ∈ S :=
+    cfc_mem (𝕜' := ℂ) _ hT
+  have hmB₁ : B₁ ∈ S := hpow hBc b
+  have hm : (A₁ * A₂) * B₂ ∈ S :=
+    S.mul_mem (S.mul_mem (hpow hAc a) (hpow hAc c)) (hpow hBc d)
   calc
     traceRe (star (A₁ * B₁) * (A₂ * B₂)) = traceRe (B₁ * ((A₁ * A₂) * B₂)) := by
       rw [hstar, ← mul_assoc, ← mul_assoc, ← mul_assoc]
-    _ = traceRe (((A₁ * A₂) * B₂) * B₁) :=
-      traceRe_mul_comm_closure (mem_groupCStar_iff.mp hmB₁) (mem_groupCStar_iff.mp hm)
+    _ = traceRe (((A₁ * A₂) * B₂) * B₁) := hτ hmB₁ hm
     _ = traceRe (operatorRpow A (a + c) * operatorRpow B (b + d)) := by
       rw [mul_assoc, operatorRpow_add hA ha hc, show operatorRpow B (b+d) = B₂ * B₁ by
         rw [add_comm, operatorRpow_add hB hd hb]]
 
 /-- A trace pairing of positive powers is bounded by the affine interpolation of their
 endpoint moments. -/
-theorem traceRe_positive_pair_young {n : ℕ} {A B : Operator n}
-    (hA : 0 ≤ A) (hB : 0 ≤ B) (hAc : A ∈ groupCStar n) (hBc : B ∈ groupCStar n)
+private theorem traceRe_positive_pair_young_closed {n : ℕ} {A B : Operator n}
+    (S : StarSubalgebra ℂ (Operator n)) [IsClosed (S : Set (Operator n))]
+    (hτ : ∀ {U V : Operator n}, U ∈ S → V ∈ S → traceRe (U * V) = traceRe (V * U))
+    (hA : 0 ≤ A) (hB : 0 ≤ B) (hAc : A ∈ S) (hBc : B ∈ S)
     {p q t : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) (ht : t ∈ Set.Icc 0 1) :
     traceRe (operatorRpow A (p * t) * operatorRpow B (q * (1 - t))) ≤
       t * traceRe (operatorRpow A p) + (1 - t) * traceRe (operatorRpow B q) := by
@@ -241,7 +245,7 @@ theorem traceRe_positive_pair_young {n : ℕ} {A B : Operator n}
     have hy0 := hy.1
     have hy1 := sub_nonneg.mpr hy.2
     dsimp [X, f]
-    rw [trace_pair_powers hA hB hAc hBc (by positivity) (by positivity)
+    rw [trace_pair_powers S hτ hA hB hAc hBc (by positivity) (by positivity)
       (by positivity) (by positivity)]
     congr 3 <;> ring
   have hmid (x : ℝ) (hx : x ∈ Set.Icc 0 1) (y : ℝ) (hy : y ∈ Set.Icc 0 1) :
@@ -269,6 +273,15 @@ theorem traceRe_positive_pair_young {n : ℕ} {A B : Operator n}
   rw [h0, h1, add_comm] at h
   exact h
 
+theorem traceRe_positive_pair_young {n : ℕ} {A B : Operator n}
+    (hA : 0 ≤ A) (hB : 0 ≤ B) (hAc : A ∈ groupCStar n) (hBc : B ∈ groupCStar n)
+    {p q t : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) (ht : t ∈ Set.Icc 0 1) :
+    traceRe (operatorRpow A (p * t) * operatorRpow B (q * (1 - t))) ≤
+      t * traceRe (operatorRpow A p) + (1 - t) * traceRe (operatorRpow B q) :=
+  traceRe_positive_pair_young_closed (groupCStar n)
+    (fun hU hV ↦ traceRe_mul_comm_closure (mem_groupCStar_iff.mp hU) (mem_groupCStar_iff.mp hV))
+    hA hB hAc hBc hp hq ht
+
 theorem operatorRpow_smul {n : ℕ} {A : Operator n} (hA : 0 ≤ A) {c r : ℝ}
     (hc : 0 ≤ c) (hr : 0 ≤ r) :
     operatorRpow ((c : ℂ) • A) r = (Complex.ofReal (c ^ r)) • operatorRpow A r := by
@@ -294,10 +307,12 @@ private theorem trace_power_rescale_le_one {n : ℕ} {A : Operator n}
   have h' := Real.rpow_le_rpow (Real.rpow_nonneg hA' _) h hp.le
   simpa only [one_div, Real.rpow_inv_rpow hA' hp.ne'] using h'
 
-/-- Hölder's inequality for a trace pairing of positive operators in the reduced group
-C*-algebra. -/
-theorem traceRe_positive_pair_holder {n : ℕ} {A B : Operator n}
-    (hA : 0 ≤ A) (hB : 0 ≤ B) (hAc : A ∈ groupCStar n) (hBc : B ∈ groupCStar n)
+/-- Hölder's inequality for a trace pairing in a closed star subalgebra
+on which the canonical trace is tracial. -/
+theorem traceRe_positive_pair_holder_closed {n : ℕ} {A B : Operator n}
+    (S : StarSubalgebra ℂ (Operator n)) [IsClosed (S : Set (Operator n))]
+    (hτ : ∀ {U V : Operator n}, U ∈ S → V ∈ S → traceRe (U * V) = traceRe (V * U))
+    (hA : 0 ≤ A) (hB : 0 ≤ B) (hAc : A ∈ S) (hBc : B ∈ S)
     {p q : ℝ} (hp : 1 < p) (hq : 1 < q) (hpq : 1 / p + 1 / q = 1) :
     traceRe (A * B) ≤
       traceRe (operatorRpow A p) ^ (1 / p) * traceRe (operatorRpow B q) ^ (1 / q) := by
@@ -322,8 +337,8 @@ theorem traceRe_positive_pair_holder {n : ℕ} {A B : Operator n}
         (Complex.zero_le_real.mpr (inv_nonneg.mpr hb.le)))
     have ht : 1 / p ∈ Set.Icc (0 : ℝ) 1 :=
       ⟨by positivity, (div_le_iff₀ hp0).mpr (by linarith)⟩
-    have hy := traceRe_positive_pair_young hA' hB'
-      ((groupCStar n).smul_mem hAc _) ((groupCStar n).smul_mem hBc _) hp0.le hq0.le ht
+    have hy := traceRe_positive_pair_young_closed S hτ hA' hB'
+      (S.smul_mem hAc _) (S.smul_mem hBc _) hp0.le hq0.le ht
     have hp1 : p * (1 / p) = 1 := by field_simp
     have hq1 : q * (1 - 1 / p) = 1 := by
       rw [show 1 - 1 / p = 1 / q by linarith]
@@ -347,6 +362,17 @@ theorem traceRe_positive_pair_holder {n : ℕ} {A B : Operator n}
   apply le_of_tendsto_of_tendsto tendsto_const_nhds hlim
   filter_upwards [self_mem_nhdsWithin (a := (0 : ℝ)) (s := Set.Ioi 0)] with δ hδ
   exact hm δ hδ
+
+/-- Hölder's inequality for a trace pairing of positive operators in the
+reduced group C*-algebra. -/
+theorem traceRe_positive_pair_holder {n : ℕ} {A B : Operator n}
+    (hA : 0 ≤ A) (hB : 0 ≤ B) (hAc : A ∈ groupCStar n) (hBc : B ∈ groupCStar n)
+    {p q : ℝ} (hp : 1 < p) (hq : 1 < q) (hpq : 1 / p + 1 / q = 1) :
+    traceRe (A * B) ≤
+      traceRe (operatorRpow A p) ^ (1 / p) * traceRe (operatorRpow B q) ^ (1 / q) :=
+  traceRe_positive_pair_holder_closed (groupCStar n)
+    (fun hU hV ↦ traceRe_mul_comm_closure (mem_groupCStar_iff.mp hU) (mem_groupCStar_iff.mp hV))
+    hA hB hAc hBc hp hq hpq
 
 private theorem cfc_positive_polynomial_pair {n : ℕ} {A B : Operator n}
     (hA : 0 ≤ A) (hB : 0 ≤ B)
@@ -487,7 +513,9 @@ theorem traceRe_positive_pair_nonneg {n : ℕ} {A B : Operator n}
     (hA : 0 ≤ A) (hB : 0 ≤ B) (hAc : A ∈ groupCStar n) (hBc : B ∈ groupCStar n) :
     0 ≤ traceRe (A * B) := by
   let X := operatorRpow A (1 / 2) * operatorRpow B (1 / 2)
-  have he := trace_pair_powers hA hB hAc hBc (a := 1 / 2) (b := 1 / 2)
+  have he := trace_pair_powers (groupCStar n)
+    (fun hU hV ↦ traceRe_mul_comm_closure (mem_groupCStar_iff.mp hU) (mem_groupCStar_iff.mp hV))
+    hA hB hAc hBc (a := 1 / 2) (b := 1 / 2)
     (c := 1 / 2) (d := 1 / 2) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
   rw [show (1 / 2 : ℝ) + 1 / 2 = 1 by norm_num, operatorRpow_one hA, operatorRpow_one hB] at he
   rw [← he]

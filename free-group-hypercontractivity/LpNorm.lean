@@ -76,7 +76,7 @@ private theorem tracialNorm_add_positive {n : ℕ} {A B : Operator n}
     rwa [hμprod]
   exact le_of_mul_le_mul_right hcomparison (Real.rpow_pos_of_pos hμpos _)
 
-private theorem tracialNorm_add {n : ℕ} {A B : Operator n}
+theorem tracialNorm_add {n : ℕ} {A B : Operator n}
     (hmA : A ∈ groupCStar n) (hmB : B ∈ groupCStar n) {p : ℝ} (hp : 1 < p) :
     operatorLpNorm p (A + B) ≤ operatorLpNorm p A + operatorLpNorm p B := by
   let L := absoluteValueOperator (star A) + absoluteValueOperator (star B)
@@ -121,7 +121,7 @@ private theorem tracialNorm_add {n : ℕ} {A B : Operator n}
     (mul_le_mul hleft hright (tracialNorm_nonneg _ _)
       (add_nonneg (tracialNorm_nonneg _ _) (tracialNorm_nonneg _ _)))
 
-private theorem tracialNorm_smul {n : ℕ} {p : ℝ} (hp : 0 < p)
+theorem tracialNorm_smul {n : ℕ} {p : ℝ} (hp : 0 < p)
     (c : ℂ) (A : Operator n) : operatorLpNorm p (c • A) = ‖c‖ * operatorLpNorm p A := by
   have hscalar : star c * c = Complex.ofReal (‖c‖ ^ 2) := by
     rw [Complex.ofReal_pow]
