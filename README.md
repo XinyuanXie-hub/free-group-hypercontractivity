@@ -35,8 +35,7 @@ For positive $`a`$, put $`\mathrm{Ent}(a)=\tau(a\log a)-\tau(a)\log\tau(a)`$.
 **Theorem 1.2.** For every positive $`x\in\mathbb{C}[\mathbb{F}_n]`$,
 
 $$
-\mathrm{Ent}(x^2)\leq 2\tau(xLx).
-\tag{1.1}
+\mathrm{Ent}(x^2)\leq 2\tau(xLx).\qquad\text{(1.1)}
 $$
 
 The inequality extends by closure to the natural form domain of $`L^{1/2}`$.
