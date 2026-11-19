@@ -28,14 +28,14 @@ $$
 t\geq\frac{1}{2}\log\frac{q-1}{p-1}.
 $$
 
-For positive $`a`$, put $`\operatorname{Ent}(a)=\tau(a\log a)-\tau(a)\log\tau(a)`$.
+For positive $`a`$, put $`\mathrm{Ent}(a)=\tau(a\log a)-\tau(a)\log\tau(a)`$.
 
 <a name="theorem-1-2"></a>
 
 **Theorem 1.2.** For every positive $`x\in\mathbb{C}[\mathbb{F}_n]`$,
 
 $$
-\operatorname{Ent}(x^2)\leq 2\tau(xLx).
+\mathrm{Ent}(x^2)\leq 2\tau(xLx).
 \tag{1.1}
 $$
 
