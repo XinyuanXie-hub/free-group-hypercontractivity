@@ -1,6 +1,6 @@
 # Fill in the placeholders after Comparator passes.
 project:
-  name: "free-group-hypercontractivity"
+  name: "Sharp hypercontractivity for free group von Neumann algebras"
   description: "Verification that the word-length Poisson semigroup on free groups has the sharp hypercontractivity threshold and the logarithmic Sobolev inequality holds with constant 2 on the natural form domain, as shown in the source."
   authors:
     - "Xinyuan Xie"
